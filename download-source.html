@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>下载源管理工具 · 按需下载</title>
+<style>
+  :root {
+    --bg: #0d1017;
+    --bg-soft: #11151f;
+    --card: #161b26;
+    --card-hover: #1b2130;
+    --border: #232a38;
+    --border-strong: #30394d;
+    --accent: #4ccfff;
+    --accent-dim: #2a7a9e;
+    --text: #e6edf3;
+    --text-dim: #8b949e;
+    --text-faint: #5c6673;
+    --success: #3fb950;
+    --warning: #d29922;
+    --danger: #f85149;
+    --vip: #ffcc66;
+    --radius: 10px;
+    --radius-sm: 7px;
+    --shadow: 0 4px 18px rgba(0, 0, 0, .35);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #2c3444; border-radius: 5px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3a4560; }
+
+  button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--border-strong);
+    color: var(--text);
+    padding: 7px 14px;
+    font-size: 13px;
+    transition: background .15s, transform .05s;
+  }
+  button:hover { background: #3a4560; }
+  button:active { transform: scale(.97); }
+  button.primary {
+    background: var(--accent);
+    color: #062b3a;
+    font-weight: 600;
+  }
+  button.primary:hover { background: #6bdbff; }
+  button.success { background: #1f3a2c; color: #87e9c6; }
+  button.success:hover { background: #2a4d3a; }
+  button.ghost { background: transparent; border: 1px solid var(--border-strong); color: var(--text-dim); }
+  button.ghost:hover { color: var(--text); border-color: #4a5570; }
+  button.danger { background: #3a1f22; color: #ff8a84; }
+  button.danger:hover { background: #4a262b; }
+  button:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+
+  input[type="text"], select {
+    font-family: inherit;
+    font-size: 13px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    padding: 7px 12px;
+    outline: none;
+    transition: border-color .15s;
+  }
+  input[type="text"]:focus, select:focus { border-color: var(--accent-dim); }
+
+  /* ===== 布局 ===== */
+  .app { display: flex; flex-direction: column; height: 100vh; }
+
+  header {
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, #121624, #0d1017);
+    padding: 12px 20px;
+  }
+  .header-top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand .dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent);
+  }
+  .brand h1 { font-size: 17px; font-weight: 700; letter-spacing: .5px; }
+  .brand small { display: block; color: var(--text-faint); font-weight: 400; font-size: 11px; }
+
+  .stats { display: flex; gap: 18px; margin-left: auto; flex-wrap: wrap; }
+  .stat { text-align: center; }
+  .stat b { display: block; font-size: 18px; color: var(--accent); }
+  .stat span { font-size: 11px; color: var(--text-faint); }
+
+  .source-bar { display: flex; gap: 8px; margin-top: 10px; align-items: center; }
+  .source-bar input { flex: 1; min-width: 200px; }
+
+  /* ===== 主体 ===== */
+  .body { display: flex; flex: 1; min-height: 0; }
+
+  main { flex: 1; min-width: 0; overflow-y: auto; padding: 16px 20px 76px; }
+
+  .toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  .toolbar .search { flex: 1; min-width: 200px; position: relative; }
+  .toolbar .search input { width: 100%; padding-right: 32px; }
+  .toolbar .search .clear {
+    position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; color: var(--text-faint); font-size: 16px; padding: 2px 6px;
+  }
+  .toolbar .search .clear:hover { color: var(--danger); }
+  .toolbar label.page-size { color: var(--text-dim); font-size: 12px; display: flex; align-items: center; gap: 6px; }
+
+  .cats { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .cat-chip {
+    padding: 5px 14px; border-radius: 999px;
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--text-dim); font-size: 12.5px; cursor: pointer;
+    transition: all .15s;
+  }
+  .cat-chip:hover { color: var(--text); border-color: var(--border-strong); }
+  .cat-chip.active { background: var(--accent); border-color: var(--accent); color: #062b3a; font-weight: 600; }
+
+  /* 列表 */
+  .list { display: flex; flex-direction: column; gap: 10px; }
+  .list-empty {
+    text-align: center; padding: 60px 0; color: var(--text-faint);
+  }
+  .list-empty .big { font-size: 40px; margin-bottom: 10px; }
+
+  .card {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 12px 14px;
+    transition: background .15s, border-color .15s;
+  }
+  .card:hover { background: var(--card-hover); border-color: var(--border-strong); }
+
+  .card .thumb {
+    width: 52px; height: 52px; border-radius: 8px; flex-shrink: 0;
+    background: #1a2030 center/cover no-repeat;
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-faint); font-size: 20px;
+    overflow: hidden;
+  }
+  .card .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  .card .info { flex: 1; min-width: 0; }
+  .card .info .name-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .card .info .name { font-size: 15px; font-weight: 600; }
+  .card .info .desc {
+    font-size: 12px; color: var(--text-dim); margin-top: 2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .card .info .meta { display: flex; align-items: center; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+
+  .tag {
+    font-size: 11px; padding: 1px 8px; border-radius: 999px;
+    background: #1e2735; color: var(--text-dim); border: 1px solid var(--border);
+  }
+  .tag.cat { color: #8ec9ff; border-color: #1f4a6e; background: #0f2233; }
+  .tag.vip { color: var(--vip); border-color: #5a4a1f; background: #2a2415; }
+  .tag.done { color: var(--success); border-color: #1f4a2c; background: #0f2a1a; }
+
+  .card .actions { display: flex; gap: 6px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+  .card .actions button { font-size: 12px; padding: 6px 10px; }
+  .card .actions .sub {
+    display: flex; gap: 4px;
+  }
+  .card .actions .sub button { background: transparent; border: 1px solid var(--border-strong); color: var(--text-dim); padding: 6px 8px; }
+  .card .actions .sub button:hover { color: var(--text); border-color: var(--accent-dim); }
+
+  /* 分页 */
+  .pager { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 18px; }
+  .pager button { min-width: 64px; }
+  .pager .page-info { color: var(--text-dim); font-size: 13px; }
+
+  /* ===== 下载队列 ===== */
+  .queue-panel {
+    flex-shrink: 0; width: 330px; min-width: 330px;
+    border-left: 1px solid var(--border);
+    background: var(--bg-soft);
+    display: flex; flex-direction: column; min-height: 0;
+  }
+  .queue-head {
+    padding: 12px 16px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .queue-head h2 { font-size: 14px; flex: 1; }
+  .queue-head .badge {
+    background: var(--accent); color: #062b3a; font-size: 11px; font-weight: 700;
+    border-radius: 999px; padding: 1px 8px;
+  }
+  .queue-actions { display: flex; gap: 6px; }
+
+  .queue-list { flex: 1; overflow-y: auto; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; }
+  .queue-empty { color: var(--text-faint); text-align: center; padding: 30px 0; font-size: 12px; }
+
+  .task {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 8px 10px;
+  }
+  .task.downloading { border-color: var(--accent-dim); }
+  .task.done { border-color: #1f4a2c; }
+  .task.error { border-color: #5a2a2e; }
+  .task .t-top { display: flex; align-items: center; gap: 6px; }
+  .task .t-type {
+    font-size: 10px; padding: 0 6px; border-radius: 4px;
+    background: #1e2735; color: var(--text-dim); flex-shrink: 0;
+  }
+  .task .t-name { flex: 1; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .task .t-status { font-size: 11px; flex-shrink: 0; }
+  .task .t-status.waiting { color: var(--text-faint); }
+  .task .t-status.downloading { color: var(--accent); }
+  .task .t-status.done { color: var(--success); }
+  .task .t-status.error { color: var(--danger); }
+  .task .t-remove {
+    background: none; border: none; color: var(--text-faint);
+    font-size: 14px; padding: 0 4px; line-height: 1;
+  }
+  .task .t-remove:hover { color: var(--danger); }
+
+  .task .t-bar { height: 4px; background: #1a2130; border-radius: 2px; margin-top: 6px; overflow: hidden; }
+  .task .t-bar > i {
+    display: block; height: 100%; width: 0; border-radius: 2px;
+    background: var(--accent); transition: width .2s;
+  }
+  .task.done .t-bar > i { background: var(--success); }
+  .task.error .t-bar > i { background: var(--danger); }
+  .task .t-foot { display: flex; justify-content: space-between; margin-top: 4px; font-size: 10.5px; color: var(--text-faint); }
+
+  /* toast */
+  .toast-wrap { position: fixed; top: 16px; right: 16px; z-index: 999; display: flex; flex-direction: column; gap: 8px; }
+  .toast {
+    background: #1c2436; border: 1px solid var(--border-strong); border-left: 3px solid var(--accent);
+    color: var(--text); border-radius: 8px; padding: 10px 14px; font-size: 13px;
+    box-shadow: var(--shadow); min-width: 220px; max-width: 340px;
+    animation: slideIn .2s ease;
+  }
+  .toast.ok { border-left-color: var(--success); }
+  .toast.err { border-left-color: var(--danger); }
+  .toast.warn { border-left-color: var(--warning); }
+  @keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+  /* 响应式：窄屏时队列折叠 */
+  .queue-toggle { display: none; }
+  @media (max-width: 980px) {
+    .body { flex-direction: column; }
+    .queue-panel {
+      width: 100%; min-width: 0; border-left: none; border-top: 1px solid var(--border);
+      max-height: 40vh;
+    }
+    .queue-toggle {
+      display: block; position: fixed; right: 16px; bottom: 16px; z-index: 50;
+      width: 52px; height: 52px; border-radius: 50%;
+      background: var(--accent); color: #062b3a; font-size: 20px; font-weight: 700;
+      box-shadow: var(--shadow);
+    }
+    body.queue-collapsed .queue-panel { display: none; }
+  }
+
+  /* 播放中的卡片高亮 */
+  .card.playing { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .card.playing .name { color: var(--accent); }
+
+  /* 底部播放条 */
+  .player-bar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+    display: flex; align-items: center; gap: 12px;
+    background: rgba(15, 18, 25, .97);
+    border-top: 1px solid var(--border-strong);
+    padding: 8px 14px;
+    box-shadow: 0 -4px 18px rgba(0, 0, 0, .35);
+  }
+  .pb-left { display: flex; align-items: center; gap: 10px; min-width: 0; flex-shrink: 1; }
+  .pb-status {
+    width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+    background: var(--accent); color: #062b3a;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; cursor: pointer;
+  }
+  .pb-status:hover { background: #6bdbff; }
+  .pb-info { display: flex; flex-direction: column; min-width: 0; }
+  .pb-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+  .pb-file { font-size: 11px; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+  .pb-progress { flex: 1; display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .pb-track { flex: 1; height: 4px; background: #1a2130; border-radius: 2px; cursor: pointer; position: relative; }
+  .pb-track > i {
+    display: block; height: 100%; width: 0; border-radius: 2px;
+    background: var(--accent); transition: width .1s linear;
+  }
+  .pb-time { font-size: 11px; color: var(--text-faint); white-space: nowrap; }
+  .pb-controls { display: flex; gap: 6px; flex-shrink: 0; }
+  .pb-controls button { min-width: 34px; padding: 6px 10px; }
+
+  /* 播放条出现时上移窄屏队列按钮，避免遮挡 */
+  body.player-on .queue-toggle { bottom: 64px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="header-top">
+      <div class="brand">
+        <span class="dot"></span>
+        <div>
+          <h1>下载源管理工具</h1>
+          <small>按需下载 download.ux 数据源（腾讯云 COS weapons-catalog）</small>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><b id="stTotal">-</b><span>武器</span></div>
+        <div class="stat"><b id="stAudio">-</b><span>音频</span></div>
+        <div class="stat"><b id="stCat">-</b><span>分类</span></div>
+        <div class="stat"><b id="stQueued">0</b><span>队列</span></div>
+      </div>
+    </div>
+    <div class="source-bar">
+      <input type="text" id="catalogUrl" spellcheck="false"
+        value="https://wrap-fx-assets-1327887151.cos.ap-shanghai.myqcloud.com/weapons-catalog.json">
+      <button id="loadBtn" class="primary">加载目录</button>
+      <button id="refreshBtn" class="ghost" title="强制从网络重新拉取">刷新</button>
+      <span id="sourceHint" style="font-size:11px;color:var(--text-faint)"></span>
+    </div>
+  </header>
+
+  <div class="body">
+    <main>
+      <div class="toolbar">
+        <div class="search">
+          <input type="text" id="searchInput" placeholder="搜索名称 / 描述 / 作者 / ID...">
+          <button class="clear" id="searchClear" title="清空">×</button>
+        </div>
+        <label class="page-size">每页
+          <select id="pageSize">
+            <option value="10">10</option>
+            <option value="20" selected>20</option>
+            <option value="50">50</option>
+            <option value="0">全部</option>
+          </select>
+        </label>
+        <button id="selectCatAll" class="ghost" title="清除分类筛选">全部</button>
+      </div>
+
+      <div class="cats" id="catChips"></div>
+
+      <div class="list" id="list">
+        <div class="list-empty"><div class="big">📦</div>点击「加载目录」开始，或等待自动加载…</div>
+      </div>
+
+      <div class="pager" id="pager" style="display:none">
+        <button id="prevPage">‹ 上一页</button>
+        <span class="page-info" id="pageInfo"></span>
+        <button id="nextPage">下一页 ›</button>
+      </div>
+    </main>
+
+    <aside class="queue-panel" id="queuePanel">
+      <div class="queue-head">
+        <h2>下载队列</h2>
+        <span class="badge" id="queueBadge">0</span>
+        <div class="queue-actions">
+          <button class="ghost" id="clearDone" title="清空已完成/失败">清空</button>
+          <button class="ghost" id="clearAll" title="清空全部任务">全部清空</button>
+        </div>
+      </div>
+      <div class="queue-list" id="queueList">
+        <div class="queue-empty">暂无下载任务<br>在左侧点击「下载全部」或「音频/图标」即可按需下载</div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<button class="queue-toggle" id="queueToggle" title="下载队列">⬇</button>
+
+<!-- 底部播放条 -->
+<div class="player-bar" id="playerBar" style="display:none">
+  <div class="pb-left">
+    <span class="pb-status" id="pbStatus" title="暂停/继续">⏸</span>
+    <div class="pb-info">
+      <span class="pb-name" id="pbName"></span>
+      <span class="pb-file" id="pbFile"></span>
+    </div>
+  </div>
+  <div class="pb-progress">
+    <div class="pb-track" id="pbTrack"><i id="pbFill"></i></div>
+    <span class="pb-time" id="pbTime">0:00 / 0:00</span>
+  </div>
+  <div class="pb-controls">
+    <button id="pbToggle" title="暂停/继续">⏸</button>
+    <button id="pbStop" title="停止">⏹</button>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+(function () {
+  'use strict'
+
+  // ===== 常量 =====
+  var DEFAULT_CATALOG_URL = 'https://wrap-fx-assets-1327887151.cos.ap-shanghai.myqcloud.com/weapons-catalog.json'
+  var STORE_URL_KEY = 'dsm_catalog_url'
+  var STORE_CACHE_KEY = 'dsm_catalog_cache'
+  var CACHE_TTL = 10 * 60 * 1000 // 10 分钟
+
+  // ===== 状态 =====
+  var state = {
+    weapons: [],        // 完整武器列表
+    filtered: [],       // 分类+搜索过滤后的列表
+    pageItems: [],      // 当前页条目
+    categories: [],     // 分类列表
+    currentCat: '',     // 当前分类（'' 表示全部）
+    keyword: '',        // 搜索关键词
+    pageSize: 20,
+    pageIndex: 0,
+    loading: false,
+    loadedFromCache: false
+  }
+
+  var queue = []          // 下载任务数组
+  var queueRunning = false
+  var uidSeed = 1
+
+  // ===== 播放器状态 =====
+  var player = {
+    weaponId: '',
+    weaponName: '',
+    index: 0,
+    playing: false,
+    urls: [],
+    fileNames: []
+  }
+
+  // ===== DOM 引用 =====
+  var $ = function (id) { return document.getElementById(id) }
+  var elCatalogUrl = $('catalogUrl')
+  var elList = $('list')
+  var elCats = $('catChips')
+  var elSearch = $('searchInput')
+  var elPageSize = $('pageSize')
+  var elPager = $('pager')
+  var elPageInfo = $('pageInfo')
+  var elQueueList = $('queueList')
+  var elQueueBadge = $('queueBadge')
+  var elSourceHint = $('sourceHint')
+  var elPlayerBar = $('playerBar')
+
+  // ===== 工具函数 =====
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;')
+  }
+  function basename(p) {
+    var parts = String(p || '').split('/')
+    return parts[parts.length - 1] || ''
+  }
+  function formatSize(n) {
+    if (!n) return ''
+    if (n < 1024) return n + ' B'
+    if (n < 1048576) return (n / 1024).toFixed(1) + ' KB'
+    return (n / 1048576).toFixed(2) + ' MB'
+  }
+  function toast(msg, type) {
+    var wrap = $('toastWrap')
+    var el = document.createElement('div')
+    el.className = 'toast ' + (type || '')
+    el.textContent = msg
+    wrap.appendChild(el)
+    setTimeout(function () { el.style.opacity = '0'; el.style.transition = 'opacity .3s'; }, 2400)
+    setTimeout(function () { el.remove() }, 2800)
+  }
+
+  // 将 COS 相对路径解析为绝对 URL（与 download.js resolveUrl 一致）
+  function resolveUrl(url) {
+    if (!url) return ''
+    if (url.indexOf('/') === 0) {
+      var base = elCatalogUrl.value.trim() || DEFAULT_CATALOG_URL
+      // 从目录 URL 推导 COS 域名（去掉文件名部分）
+      var m = base.match(/^(https?:\/\/[^/]+)/)
+      return (m ? m[1] : '') + url
+    }
+    return url
+  }
+
+  // ===== 目录加载 =====
+  function loadCatalog(force) {
+    var url = elCatalogUrl.value.trim() || DEFAULT_CATALOG_URL
+    localStorage.setItem(STORE_URL_KEY, url)
+
+    if (!force) {
+      var cached = readCache()
+      if (cached) {
+        applyCatalog(cached.weapons, cached.version)
+        state.loadedFromCache = true
+        elSourceHint.textContent = '已显示本地缓存，正在刷新…'
+      }
+    }
+
+    state.loading = true
+    setLoadBtn(true)
+    fetch(url, { cache: 'no-store' })
+      .then(function (res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status)
+        return res.json()
+      })
+      .then(function (data) {
+        if (!data || !data.weapons) throw new Error('目录格式异常：缺少 weapons 字段')
+        applyCatalog(data.weapons, data.version)
+        writeCache(data.weapons, data.version)
+        elSourceHint.textContent = ''
+        if (state.loadedFromCache) toast('目录已刷新', 'ok')
+        state.loadedFromCache = false
+      })
+      .catch(function (err) {
+        if (!readCache()) {
+          renderEmpty('加载失败：' + (err && err.message || err) + '<br><small>请检查网络或数据源 URL</small>')
+          toast('目录加载失败', 'err')
+        } else {
+          elSourceHint.textContent = '刷新失败，继续使用缓存'
+          toast('刷新失败，使用缓存', 'warn')
+        }
+      })
+      .finally(function () {
+        state.loading = false
+        setLoadBtn(false)
+      })
+  }
+
+  function setLoadBtn(loading) {
+    $('loadBtn').disabled = loading
+    $('refreshBtn').disabled = loading
+    $('loadBtn').textContent = loading ? '加载中…' : '加载目录'
+  }
+
+  function readCache() {
+    try {
+      var raw = localStorage.getItem(STORE_CACHE_KEY)
+      if (!raw) return null
+      var obj = JSON.parse(raw)
+      if (!obj || !obj.weapons) return null
+      if (Date.now() - (obj.ts || 0) > CACHE_TTL && obj.weaponsCount < 1) return null
+      return obj
+    } catch (e) { return null }
+  }
+  function writeCache(weapons, version) {
+    try {
+      localStorage.setItem(STORE_CACHE_KEY, JSON.stringify({
+        ts: Date.now(),
+        version: version,
+        weapons: weapons
+      }))
+    } catch (e) { /* 忽略存储失败 */ }
+  }
+
+  // 解析 weapons 对象为数组（与 download.js 字段映射一致）
+  function applyCatalog(weaponsObj, version) {
+    var list = Object.keys(weaponsObj).map(function (key) {
+      var w = weaponsObj[key] || {}
+      return {
+        id: key,
+        index: w.index !== undefined ? w.index : 0,
+        name: w.name || key,
+        iconUrl: resolveUrl(w.iconUrl || ''),
+        preImgUrl: resolveUrl(w.preImgUrl || ''),
+        audioUrls: (w.audioUrls || []).map(resolveUrl),
+        audioCount: (w.audioUrls || []).length,
+        vibrationDuration: w.vibrationDuration || 1500,
+        debounceTime: w.debounceTime || 0,
+        playMode: w.playMode === 2 ? 2 : 1,
+        description: w.description || '',
+        category: w.category || 'other',
+        author: w.author || '官方',
+        isVip: !!w.isVip
+      }
+    })
+    list.sort(function (a, b) { return (a.index || 0) - (b.index || 0) })
+    state.weapons = list
+
+    // 分类
+    var cats = []
+    list.forEach(function (w) {
+      var c = w.category || 'other'
+      if (cats.indexOf(c) === -1) cats.push(c)
+    })
+    state.categories = cats
+
+    $('stTotal').textContent = list.length
+    $('stAudio').textContent = list.reduce(function (n, w) { return n + w.audioCount }, 0)
+    $('stCat').textContent = cats.length
+
+    renderCats()
+    state.pageIndex = 0
+    applyFilter()
+  }
+
+  // ===== 过滤与分页 =====
+  function applyFilter() {
+    var kw = (state.keyword || '').trim().toLowerCase()
+    var list = state.weapons
+    if (state.currentCat) {
+      list = list.filter(function (w) { return (w.category || 'other') === state.currentCat })
+    }
+    if (kw) {
+      list = list.filter(function (w) {
+        var hay = (w.name + ' ' + (w.description || '') + ' ' + (w.author || '') + ' ' + w.id).toLowerCase()
+        return hay.indexOf(kw) >= 0
+      })
+    }
+    state.filtered = list
+    state.pageIndex = 0
+    applyPage()
+  }
+
+  function applyPage() {
+    var list = state.filtered
+    var size = state.pageSize
+    if (!size || size <= 0) size = list.length || 1
+    var total = list.length
+    var pages = Math.max(1, Math.ceil(total / size))
+    if (state.pageIndex > pages - 1) state.pageIndex = pages - 1
+    var start = state.pageIndex * size
+    state.pageItems = list.slice(start, start + size)
+    renderList()
+    renderPager()
+  }
+
+  function renderCats() {
+    var html = '<div class="cat-chip' + (state.currentCat === '' ? ' active' : '') + '" data-cat="">全部</div>'
+    state.categories.forEach(function (c) {
+      var cnt = state.weapons.filter(function (w) { return (w.category || 'other') === c }).length
+      html += '<div class="cat-chip' + (state.currentCat === c ? ' active' : '') + '" data-cat="' + esc(c) + '">' + esc(c) + ' (' + cnt + ')</div>'
+    })
+    elCats.innerHTML = html
+  }
+
+  function renderList() {
+    if (!state.weapons.length) {
+      elList.innerHTML = '<div class="list-empty"><div class="big">📦</div>点击「加载目录」开始，或等待自动加载…</div>'
+      return
+    }
+    if (!state.pageItems.length) {
+      elList.innerHTML = '<div class="list-empty"><div class="big">🔍</div>没有匹配的音效</div>'
+      return
+    }
+
+    var html = ''
+    state.pageItems.forEach(function (w) {
+      var vip = w.isVip ? '<span class="tag vip">VIP</span>' : ''
+      var playMode = w.playMode === 2 ? '<span class="tag">Combo</span>' : ''
+      var isCurrent = player.weaponId === w.id
+      var playLabel = (isCurrent && player.playing) ? '⏸ 暂停' : '▶ 试听'
+      html +=
+        '<div class="card' + (isCurrent ? ' playing' : '') + '" data-id="' + esc(w.id) + '">' +
+          '<div class="thumb">' + (w.iconUrl ? '<img src="' + esc(w.iconUrl) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '🔊') + '</div>' +
+          '<div class="info">' +
+            '<div class="name-row"><span class="name">' + esc(w.name) + '</span>' + vip + playMode + '</div>' +
+            (w.description ? '<div class="desc" title="' + esc(w.description) + '">' + esc(w.description) + '</div>' : '') +
+            '<div class="meta">' +
+              '<span class="tag cat">' + esc(w.category || 'other') + '</span>' +
+              '<span class="tag">' + w.audioCount + ' 音频</span>' +
+              (w.author ? '<span class="tag">' + esc(w.author) + '</span>' : '') +
+            '</div>' +
+          '</div>' +
+          '<div class="actions">' +
+            (w.audioCount ? '<button class="ghost" data-act="play" title="在线试听">' + playLabel + '</button>' : '') +
+            '<button class="success" data-act="all" title="下载全部（图标+预览+音频）">下载全部</button>' +
+            '<div class="sub">' +
+              (w.audioCount ? '<button data-act="audio" title="仅下载音频">音频 ×' + w.audioCount + '</button>' : '') +
+              (w.iconUrl ? '<button data-act="icon" title="仅下载图标">图标</button>' : '') +
+              (w.preImgUrl ? '<button data-act="pre" title="仅下载预览图">预览</button>' : '') +
+            '</div>' +
+          '</div>' +
+        '</div>'
+    })
+    elList.innerHTML = html
+  }
+
+  function renderPager() {
+    var size = state.pageSize
+    var total = state.filtered.length
+    var pages = Math.max(1, Math.ceil(total / (size || total || 1)))
+    if (pages <= 1 && size) {
+      elPager.style.display = 'none'
+      return
+    }
+    elPager.style.display = 'flex'
+    elPageInfo.textContent = '第 ' + (state.pageIndex + 1) + ' / ' + pages + ' 页 · 共 ' + total + ' 条'
+    $('prevPage').disabled = state.pageIndex <= 0
+    $('nextPage').disabled = state.pageIndex >= pages - 1
+  }
+
+  function renderEmpty(msg) {
+    elList.innerHTML = '<div class="list-empty"><div class="big">⚠️</div>' + msg + '</div>'
+  }
+
+  // ===== 播放器 =====
+  function playWeapon(w) {
+    if (!w.audioUrls || !w.audioUrls.length) {
+      toast('该武器没有音频', 'warn')
+      return
+    }
+    // 点击同一武器：暂停/继续
+    if (player.weaponId === w.id && player.audio.src) {
+      togglePlayback()
+      return
+    }
+    stopPlayer(true)
+    player.weaponId = w.id
+    player.weaponName = w.name
+    player.urls = w.audioUrls.slice()
+    player.fileNames = w.audioUrls.map(function (u) { return basename(u) })
+    player.index = 0
+    loadCurrent()
+  }
+
+  function loadCurrent() {
+    var a = player.audio
+    if (!a) return
+    if (player.index >= player.urls.length) {
+      stopPlayer()
+      return
+    }
+    a.src = player.urls[player.index]
+    // 立即刷新播放条（显示加载中的曲目信息）
+    player.playing = false
+    updatePlayerUI()
+    a.play().then(function () {
+      player.playing = true
+      updatePlayerUI()
+    }).catch(function (err) {
+      // 播放被阻止（浏览器自动播放限制等）：保留当前曲目，等用户再次点击继续
+      // AbortError 是用户主动暂停/切换导致的正常中断，不打印
+      if (!(err && err.name === 'AbortError')) {
+        console.error('[player] play rejected:', err)
+      }
+      player.playing = false
+      updatePlayerUI()
+    })
+  }
+
+  function togglePlayback() {
+    var a = player.audio
+    if (!a || !a.src) return
+    if (player.playing) {
+      a.pause()
+    } else {
+      a.play().catch(function () {})
+    }
+  }
+
+  function nextTrack() {
+    player.index++
+    loadCurrent()
+  }
+
+  function stopPlayer(keepBar) {
+    var a = player.audio
+    if (a) {
+      a.pause()
+      a.removeAttribute('src')
+      a.load()
+    }
+    player.weaponId = ''
+    player.weaponName = ''
+    player.playing = false
+    player.index = 0
+    player.urls = []
+    player.fileNames = []
+    if (!keepBar) {
+      elPlayerBar.style.display = 'none'
+      document.body.classList.remove('player-on')
+    }
+    updatePlayerUI()
+    // 同步卡片按钮状态（移除高亮、恢复「试听」）
+    renderList()
+  }
+
+  function updatePlayerUI() {
+    var a = player.audio
+    if (!a) return
+    if (!player.weaponId || !a.src) {
+      elPlayerBar.style.display = 'none'
+      document.body.classList.remove('player-on')
+    } else {
+      elPlayerBar.style.display = 'flex'
+      document.body.classList.add('player-on')
+      var total = player.urls.length
+      var cur = player.index + 1
+      $('pbName').textContent = player.weaponName + (total > 1 ? '（' + cur + '/' + total + '）' : '')
+      $('pbFile').textContent = player.fileNames[player.index] || ''
+      $('pbStatus').textContent = player.playing ? '⏸' : '▶'
+      $('pbToggle').textContent = player.playing ? '⏸' : '▶'
+      var dur = a.duration || 0
+      var ct = a.currentTime || 0
+      $('pbFill').style.width = (dur ? Math.min(100, ct / dur * 100) : 0) + '%'
+      $('pbTime').textContent = fmtTime(ct) + ' / ' + (dur ? fmtTime(dur) : '--:--')
+    }
+  }
+
+  function fmtTime(s) {
+    if (!isFinite(s) || s < 0) s = 0
+    var m = Math.floor(s / 60)
+    var ss = Math.floor(s % 60)
+    return m + ':' + (ss < 10 ? '0' : '') + ss
+  }
+
+  // ===== 下载队列 =====
+  function nextUid() { return 't' + (uidSeed++) }
+
+  function enqueue(weapon, types) {
+    var tasks = []
+    types.forEach(function (t) {
+      if (t === 'icon' && weapon.iconUrl) {
+        tasks.push(makeTask(weapon, 'icon', '图标', weapon.iconUrl))
+      }
+      if (t === 'pre' && weapon.preImgUrl) {
+        tasks.push(makeTask(weapon, 'pre', '预览图', weapon.preImgUrl))
+      }
+      if (t === 'audio') {
+        weapon.audioUrls.forEach(function (u, i) {
+          tasks.push(makeTask(weapon, 'audio', '音频', u))
+        })
+      }
+    })
+
+    var added = 0
+    tasks.forEach(function (t) {
+      var dup = queue.some(function (q) {
+        return q.url === t.url && (q.status === 'waiting' || q.status === 'downloading')
+      })
+      if (dup) return
+      queue.push(t)
+      added++
+    })
+    renderQueue()
+    processQueue()
+    if (added) toast('已加入 ' + added + ' 个下载任务', 'ok')
+    return added
+  }
+
+  function makeTask(weapon, type, typeLabel, url) {
+    return {
+      uid: nextUid(),
+      weaponId: weapon.id,
+      weaponName: weapon.name,
+      type: type,
+      typeLabel: typeLabel,
+      filename: weapon.id + '/' + basename(url),
+      url: url,
+      status: 'waiting',
+      progress: 0,
+      sizeText: '',
+      error: ''
+    }
+  }
+
+  function processQueue() {
+    if (queueRunning) return
+    var next = queue.find(function (t) { return t.status === 'waiting' })
+    if (!next) return
+    queueRunning = true
+    downloadTask(next).finally(function () {
+      queueRunning = false
+      processQueue()
+    })
+  }
+
+  async function downloadTask(task) {
+    task.status = 'downloading'
+    renderQueue()
+    try {
+      var res = await fetch(task.url, { mode: 'cors' })
+      if (!res.ok) throw new Error('HTTP ' + res.status)
+      var total = parseInt(res.headers.get('Content-Length') || '0', 10)
+      task.sizeText = formatSize(total)
+
+      // 支持流式读取时显示真实进度
+      if (total && res.body && typeof res.body.getReader === 'function') {
+        var reader = res.body.getReader()
+        var chunks = []
+        var received = 0
+        for (;;) {
+          var r = await reader.read()
+          if (r.done) break
+          chunks.push(r.value)
+          received += r.value.length
+          task.progress = Math.min(100, Math.round(received / total * 100))
+          renderQueue()
+        }
+        var blob = new Blob(chunks)
+      } else {
+        var blob2 = await res.blob()
+        task.progress = 100
+        renderQueue()
+        blob = blob2
+      }
+
+      saveBlob(blob, task.filename)
+      task.status = 'done'
+      task.progress = 100
+      if (!task.sizeText) task.sizeText = formatSize(blob.size)
+    } catch (e) {
+      task.status = 'error'
+      task.error = (e && e.message) || String(e)
+    }
+    renderQueue()
+    processQueue()
+  }
+
+  function saveBlob(blob, filename) {
+    var url = URL.createObjectURL(blob)
+    var a = document.createElement('a')
+    a.href = url
+    a.download = filename
+    a.rel = 'noopener'
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    setTimeout(function () { URL.revokeObjectURL(url) }, 2000)
+  }
+
+  function renderQueue() {
+    elQueueBadge.textContent = queue.length
+    var active = queue.filter(function (t) { return t.status === 'waiting' || t.status === 'downloading' }).length
+    $('stQueued').textContent = active
+
+    if (!queue.length) {
+      elQueueList.innerHTML = '<div class="queue-empty">暂无下载任务<br>在左侧点击「下载全部」或「音频/图标」即可按需下载</div>'
+      return
+    }
+
+    var html = ''
+    queue.forEach(function (t) {
+      var statusText = { waiting: '等待中', downloading: '下载中', done: '完成', error: '失败' }[t.status] || t.status
+      html +=
+        '<div class="task ' + t.status + '" data-uid="' + t.uid + '">' +
+          '<div class="t-top">' +
+            '<span class="t-type">' + esc(t.typeLabel) + '</span>' +
+            '<span class="t-name" title="' + esc(t.filename) + '">' + esc(t.weaponName) + '</span>' +
+            '<span class="t-status ' + t.status + '">' + statusText + '</span>' +
+            '<button class="t-remove" data-act="remove" title="移除">×</button>' +
+          '</div>' +
+          '<div class="t-bar"><i style="width:' + t.progress + '%"></i></div>' +
+          '<div class="t-foot">' +
+            '<span>' + esc(t.filename) + '</span>' +
+            '<span>' + (t.error ? esc(t.error) : (t.sizeText ? t.sizeText : (t.progress ? t.progress + '%' : ''))) + '</span>' +
+          '</div>' +
+        '</div>'
+    })
+    elQueueList.innerHTML = html
+  }
+
+  function removeTask(uid) {
+    var i = queue.findIndex(function (t) { return t.uid === uid })
+    if (i >= 0) queue.splice(i, 1)
+    renderQueue()
+  }
+  function clearDone() {
+    queue = queue.filter(function (t) { return t.status === 'waiting' || t.status === 'downloading' })
+    renderQueue()
+  }
+  function clearAll() {
+    queue = []
+    renderQueue()
+  }
+
+  // ===== 事件绑定 =====
+  $('loadBtn').addEventListener('click', function () { loadCatalog(true) })
+  $('refreshBtn').addEventListener('click', function () { loadCatalog(true) })
+
+  elCatalogUrl.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') loadCatalog(true)
+  })
+
+  elSearch.addEventListener('input', function () {
+    state.keyword = elSearch.value
+    applyFilter()
+  })
+  $('searchClear').addEventListener('click', function () {
+    elSearch.value = ''
+    state.keyword = ''
+    applyFilter()
+  })
+
+  elPageSize.addEventListener('change', function () {
+    state.pageSize = parseInt(elPageSize.value, 10) || 20
+    state.pageIndex = 0
+    applyPage()
+  })
+
+  $('selectCatAll').addEventListener('click', function () {
+    state.currentCat = ''
+    renderCats()
+    applyFilter()
+  })
+
+  elCats.addEventListener('click', function (e) {
+    var chip = e.target.closest('.cat-chip')
+    if (!chip) return
+    state.currentCat = chip.getAttribute('data-cat') || ''
+    renderCats()
+    applyFilter()
+  })
+
+  $('prevPage').addEventListener('click', function () {
+    if (state.pageIndex > 0) { state.pageIndex--; applyPage() }
+  })
+  $('nextPage').addEventListener('click', function () {
+    state.pageIndex++; applyPage()
+  })
+
+  elList.addEventListener('click', function (e) {
+    var btn = e.target.closest('button[data-act]')
+    if (!btn) return
+    var card = btn.closest('.card')
+    var id = card.getAttribute('data-id')
+    var w = state.weapons.find(function (x) { return x.id === id })
+    if (!w) return
+    var act = btn.getAttribute('data-act')
+    if (act === 'play') playWeapon(w)
+    else if (act === 'all') enqueue(w, ['icon', 'pre', 'audio'])
+    else if (act === 'audio') enqueue(w, ['audio'])
+    else if (act === 'icon') enqueue(w, ['icon'])
+    else if (act === 'pre') enqueue(w, ['pre'])
+  })
+
+  elQueueList.addEventListener('click', function (e) {
+    var btn = e.target.closest('button[data-act="remove"]')
+    if (!btn) return
+    var taskEl = btn.closest('.task')
+    removeTask(taskEl.getAttribute('data-uid'))
+  })
+
+  $('clearDone').addEventListener('click', clearDone)
+  $('clearAll').addEventListener('click', clearAll)
+
+  $('queueToggle').addEventListener('click', function () {
+    document.body.classList.toggle('queue-collapsed')
+    this.textContent = document.body.classList.contains('queue-collapsed') ? '⬆' : '⬇'
+  })
+
+  // ===== 播放条事件 =====
+  $('pbToggle').addEventListener('click', togglePlayback)
+  $('pbStatus').addEventListener('click', togglePlayback)
+  $('pbStop').addEventListener('click', function () { stopPlayer() })
+  $('pbTrack').addEventListener('click', function (e) {
+    var a = player.audio
+    if (!a || !a.src || !a.duration) return
+    var rect = this.getBoundingClientRect()
+    var ratio = (e.clientX - rect.left) / rect.width
+    a.currentTime = Math.max(0, Math.min(1, ratio)) * a.duration
+  })
+
+  // ===== 初始化 =====
+  ;(function init() {
+    var saved = localStorage.getItem(STORE_URL_KEY)
+    if (saved) elCatalogUrl.value = saved
+
+    // 初始化播放器
+    player.audio = new Audio()
+    var a = player.audio
+    a.addEventListener('play', function () {
+      player.playing = true
+      updatePlayerUI()
+      renderList()
+    })
+    a.addEventListener('pause', function () {
+      player.playing = false
+      updatePlayerUI()
+      renderList()
+    })
+    a.addEventListener('timeupdate', function () { updatePlayerUI() })
+    a.addEventListener('ended', function () { nextTrack() })
+    a.addEventListener('error', function () {
+      // 单个音频出错：尝试跳到下一曲；无 src 时忽略
+      if (a.src && player.weaponId) nextTrack()
+    })
+
+    loadCatalog(false) // 尝试用缓存渲染，并后台刷新
+  })()
+
+})()
+</script>
+</body>
+</html>
