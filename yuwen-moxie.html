@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高一语文上学期·期中备考·理解性默写互动课件</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&display=swap');
+
+        :root {
+            --primary: #8b261e;          /* 朱砂红 */
+            --primary-dark: #6e1c15;
+            --bg: #f8f6f0;               /* 宣纸底色 */
+            --ink: #1f2429;              /* 深焦墨 */
+            --ink-light: #5c6873;        /* 灰墨 */
+            --success: #1f5e41;          /* 黛绿 */
+            --card-bg: #ffffff;
+            --border: #d4ccb9;           /* 典雅古纸边框 */
+            --font-serif: "Noto Serif SC", "Songti SC", "Source Han Serif SC", "STSong", "SimSun", serif;
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --shadow: 0 20px 50px rgba(31, 36, 41, 0.15);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--ink);
+            font-family: var(--font-serif);
+            height: 100vh;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background-image: radial-gradient(#e5e0d3 1px, transparent 1px);
+            background-size: 32px 32px;
+            position: relative;
+            user-select: none;
+        }
+
+        /* 顶部右侧按钮栏 */
+        .top-actions {
+            position: absolute;
+            top: clamp(10px, 2.2vh, 25px);
+            right: clamp(12px, 2.4vw, 35px);
+            display: flex;
+            gap: 12px;
+            z-index: 1000;
+        }
+
+        .btn-top {
+            background: rgba(248, 246, 240, 0.95);
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: clamp(5px, 1vh, 8px) clamp(12px, 1.8vw, 20px);
+            font-size: clamp(0.9rem, 1.7vh, 1.15rem);
+            font-weight: 700;
+            font-family: var(--font-sans);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 10px rgba(139, 38, 30, 0.1);
+        }
+        .btn-top:hover { background: var(--primary); color: #fff; }
+
+        .copyright {
+            position: absolute;
+            bottom: 6px;
+            left: 18px;
+            font-size: 12px;
+            color: var(--ink-light);
+            opacity: 0.5;
+            font-family: var(--font-sans);
+            z-index: 100;
+            pointer-events: none;
+            letter-spacing: 1px;
+        }
+        .shortcuts-tip {
+            position: absolute;
+            bottom: 6px;
+            right: 18px;
+            font-size: 12px;
+            color: var(--ink-light);
+            opacity: 0.6;
+            font-family: var(--font-sans);
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        /* 封面页 */
+        #cover-page {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background-color: var(--bg);
+            background-image: radial-gradient(#e5e0d3 1px, transparent 1px);
+            background-size: 32px 32px;
+            z-index: 500;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+            text-align: center;
+            padding: 20px;
+        }
+        .cover-badge {
+            display: inline-block;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 5px clamp(12px, 2vw, 22px);
+            font-size: clamp(0.95rem, 1.9vw, 1.3rem);
+            font-weight: 700;
+            border-radius: 25px;
+            margin-bottom: clamp(12px, 2.6vh, 25px);
+            letter-spacing: clamp(2px, 0.5vw, 5px);
+        }
+        .cover-title {
+            font-size: clamp(2rem, 6vw, 4.8rem); font-weight: 900; color: var(--primary);
+            letter-spacing: clamp(2px, 0.9vw, 8px); margin-bottom: clamp(10px, 2.4vh, 20px); line-height: 1.25;
+            text-shadow: 3px 3px 0px rgba(139, 38, 30, 0.12);
+        }
+        .cover-subtitle {
+            font-size: clamp(1.05rem, 2.4vw, 2.1rem); color: var(--ink); letter-spacing: clamp(2px, 0.6vw, 4px);
+            margin-bottom: clamp(26px, 7vh, 60px); font-weight: 700;
+        }
+        .btn-enter {
+            background-color: var(--primary); color: #fff; border: none;
+            padding: clamp(12px, 2.2vh, 18px) clamp(28px, 5vw, 60px); font-size: clamp(1.15rem, 2.4vw, 1.8rem); font-weight: 900;
+            font-family: var(--font-serif); border-radius: 45px; cursor: pointer;
+            box-shadow: 0 10px 25px rgba(139, 38, 30, 0.35);
+            transition: transform 0.2s ease, background 0.2s ease;
+            letter-spacing: 4px;
+        }
+        .btn-enter:hover { transform: scale(1.05); background-color: var(--primary-dark); }
+
+        /* 主界面 */
+        #main-app {
+            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: clamp(44px, 8vh, 70px) clamp(14px, 3vw, 40px) 26px;
+            opacity: 0; visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+            height: 100vh; width: 100%;
+        }
+
+        .scene {
+            width: 100%; max-width: 1380px; flex: 1; min-height: 0;
+            perspective: 2500px; margin-bottom: clamp(8px, 1.6vh, 20px);
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        .card {
+            width: 100%; height: 100%; position: relative;
+            transition: transform 0.75s cubic-bezier(0.19, 1, 0.22, 1);
+            transform-style: preserve-3d;
+        }
+        .card.flipped { transform: rotateY(180deg); }
+
+        .card-face {
+            position: absolute; width: 100%; height: 100%;
+            -webkit-backface-visibility: hidden; backface-visibility: hidden;
+            background-color: var(--card-bg); border-radius: 20px;
+            box-shadow: var(--shadow); border: 2px solid var(--border);
+            display: flex; flex-direction: column;
+            padding: clamp(14px, 3.2vh, 45px) clamp(20px, 4.4vw, 70px); outline: 3px solid var(--primary); outline-offset: -16px;
+        }
+
+        .paper-tag {
+            align-self: center;
+            background-color: var(--bg);
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: clamp(4px, 0.8vh, 7px) clamp(14px, 2.4vw, 32px);
+            font-size: clamp(0.95rem, 1.4vw + 0.35rem, 1.5rem);
+            font-weight: 700;
+            border-radius: 30px;
+            margin-bottom: clamp(8px, 1.6vh, 25px);
+            letter-spacing: 2px;
+            flex-shrink: 0;
+            max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 正面大字题干区 */
+        .card-front {
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+        
+        .question-body {
+            flex: 1; display: flex;
+            padding: clamp(4px, 1vh, 10px) clamp(8px, 1.6vw, 20px);
+            width: 100%; min-height: 0; overflow-y: auto;
+        }
+        .question-body::-webkit-scrollbar { width: 6px; }
+        .question-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+        .question-content-layout {
+            display: flex; align-items: center; justify-content: center;
+            gap: clamp(16px, 2.4vw, 40px); width: 100%; max-width: 1200px; margin: auto;
+        }
+
+        .question-img-box {
+            flex-shrink: 0; max-width: min(46%, 480px); max-height: clamp(120px, 34vh, 380px);
+            border: 3px solid var(--border); border-radius: 12px;
+            padding: 8px; background: #fff; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+        .question-img-box img {
+            max-width: 100%; max-height: clamp(100px, 30vh, 360px); object-fit: contain;
+            border-radius: 6px; display: block;
+        }
+
+        .question-text {
+            font-size: clamp(1.4rem, 2.2vw + 1.2vh, 3.1rem);
+            line-height: 1.7;
+            color: var(--ink);
+            font-weight: 700;
+            text-align: justify;
+            letter-spacing: 2px;
+            flex: 1;
+        }
+
+        .blank-line {
+            display: inline-block; min-width: 3em; border-bottom: 3px solid var(--ink);
+            color: transparent; text-align: center; margin: 0 6px; vertical-align: baseline;
+        }
+
+        .action-area {
+            flex-shrink: 0; padding-top: clamp(6px, 1.2vh, 15px); text-align: center;
+        }
+        .btn-action {
+            background-color: var(--primary); color: #fff; border: none;
+            padding: clamp(8px, 1.4vh, 15px) clamp(24px, 3vw, 50px); font-size: clamp(1.15rem, 2.2vh, 1.65rem); font-weight: 900;
+            font-family: var(--font-serif); border-radius: 40px; cursor: pointer;
+            box-shadow: 0 8px 20px rgba(139, 38, 30, 0.4);
+            transition: all 0.2s ease; letter-spacing: 2px;
+            animation: pulse 2.2s infinite;
+        }
+        .btn-action:hover { transform: scale(1.04); background-color: var(--primary-dark); }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(139, 38, 30, 0.6); }
+            70% { box-shadow: 0 0 0 16px rgba(139, 38, 30, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(139, 38, 30, 0); }
+        }
+
+        /* 背面揭晓卡片 */
+        .card-back {
+            transform: rotateY(180deg); background-color: var(--bg);
+            border: clamp(6px, 1.1vh, 12px) solid var(--card-bg); outline: 2px solid var(--border);
+            align-items: center; justify-content: flex-start;
+            padding: clamp(14px, 3.2vh, 40px) clamp(18px, 4.2vw, 65px);
+        }
+        
+        .back-content {
+            width: 100%; flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column;
+            justify-content: flex-start; gap: clamp(12px, 2vh, 24px); padding-right: clamp(4px, 1vw, 15px);
+        }
+        .back-content::-webkit-scrollbar { width: 6px; }
+        .back-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+        .content-block {
+            display: flex; flex-direction: column; align-items: flex-start; width: 100%;
+        }
+
+        .section-title {
+            font-size: clamp(0.95rem, 1.7vh, 1.4rem); font-weight: 900; color: #fff;
+            padding: 4px clamp(10px, 1.6vw, 18px); border-radius: 6px; display: inline-block;
+            margin-bottom: clamp(6px, 1vh, 12px); letter-spacing: 2px;
+        }
+        .bg-green { background-color: var(--success); }
+        .bg-red { background-color: var(--primary); }
+
+        .correct-answer-box {
+            font-size: clamp(1.3rem, 2.4vh + 0.5vw, 2.7rem);
+            font-weight: 800; color: var(--success);
+            line-height: 1.6; border-left: clamp(5px, 1vh, 8px) solid var(--success);
+            padding: clamp(10px, 1.6vh, 16px) clamp(14px, 1.8vw, 24px); background: rgba(31, 94, 65, 0.05);
+            border-radius: 0 12px 12px 0; width: 100%;
+            letter-spacing: 2px;
+        }
+
+        .analysis-text-box {
+            font-size: clamp(0.95rem, 1.5vh + 0.3vw, 1.7rem); font-weight: 500; color: var(--ink);
+            line-height: 1.7; border-left: clamp(5px, 1vh, 8px) solid var(--primary);
+            padding: clamp(10px, 1.6vh, 16px) clamp(14px, 1.8vw, 24px); background: rgba(139, 38, 30, 0.04);
+            border-radius: 0 12px 12px 0; width: 100%;
+        }
+
+        /* 导航控制条 */
+        .nav-controls {
+            display: flex; align-items: center; justify-content: center;
+            flex-wrap: wrap; gap: clamp(8px, 1.2vw, 18px); z-index: 100;
+            padding-bottom: 5px; flex-shrink: 0;
+        }
+        .nav-btn {
+            background-color: var(--card-bg); border: 2px solid var(--border);
+            color: var(--ink); font-size: clamp(1rem, 1.7vh, 1.25rem); font-weight: 700;
+            padding: clamp(8px, 1.2vh, 12px) clamp(14px, 2vw, 26px); border-radius: 12px; cursor: pointer;
+            flex: 0 0 auto; white-space: nowrap;
+            transition: all 0.2s ease; font-family: var(--font-serif);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); letter-spacing: 2px;
+        }
+        .nav-btn:hover { border-color: var(--primary); color: var(--primary); }
+        
+        .btn-random { background-color: var(--primary); color: #fff; border-color: var(--primary); }
+        .btn-random:hover {
+            background-color: var(--primary-dark); color: #fff; transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(139, 38, 30, 0.3);
+        }
+        
+        .nav-select {
+            appearance: none; background-color: var(--card-bg); border: 2px solid var(--border);
+            color: var(--primary); font-size: clamp(1rem, 1.6vh, 1.35rem); font-weight: 700;
+            padding: clamp(8px, 1.2vh, 12px) 40px clamp(8px, 1.2vh, 12px) clamp(12px, 1.6vw, 24px); border-radius: 12px; cursor: pointer;
+            flex: 1 1 260px; min-width: 0;
+            font-family: var(--font-serif); box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b261e' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat; background-position: right 16px center; background-size: 22px;
+            text-align: center; letter-spacing: 1px; max-width: min(56vw, 650px);
+        }
+        .nav-select:focus { outline: none; border-color: var(--primary); }
+
+        /* 翻回正面过程中隐藏答案面，避免下一题答案提前露出 */
+        .card.is-navigating .card-back { visibility: hidden; }
+
+        @media (max-width: 900px), (max-height: 540px) {
+            .shortcuts-tip { display: none; }
+            .copyright { font-size: 11px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-actions">
+        <button class="btn-top" id="fullscreenBtn" onclick="toggleFullScreen()">⛶ 全屏显示</button>
+    </div>
+    <div class="copyright">课件版权©️芦苇语文</div>
+    <div class="shortcuts-tip">快捷键：空格键(查看解析/下一题) · ←/→(上一题/下一题)</div>
+
+    <div id="cover-page">
+        <div class="cover-badge">高 一 语 文 期 中 备 考</div>
+        <div class="cover-title">高一语文上学期·理解性默写<br>期中备考互动课件</div>
+        <div class="cover-subtitle">（三大核心题型 · 73题全覆盖）</div>
+        <button class="btn-enter" onclick="startApp()">开始闯关</button>
+    </div>
+
+    <div id="main-app">
+        <div class="scene">
+            <div class="card" id="flipCard">
+                <div class="card-face card-front">
+                    <div class="paper-tag" id="paperTagFront">篇目 · 序号</div>
+                    <div class="question-body">
+                        <div class="question-content-layout" id="questionLayout"></div>
+                    </div>
+                    <div class="action-area">
+                        <button class="btn-action" onclick="flipTheCard()">揭晓参考答案 (空格键)</button>
+                    </div>
+                </div>
+
+                <div class="card-face card-back">
+                    <div class="paper-tag" id="paperTagBack">篇目 · 序号</div>
+                    <div class="back-content">
+                        <div class="content-block">
+                            <div class="section-title bg-green">【参考答案】</div>
+                            <div class="correct-answer-box" id="correctAnswerBox"></div>
+                        </div>
+                        <div class="content-block">
+                            <div class="section-title bg-red">【考点透析与易错字】</div>
+                            <div class="analysis-text-box" id="analysisTextBox"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-controls">
+            <button class="nav-btn" onclick="prevCard()">上一题</button>
+            <select class="nav-select" id="questionSelect" onchange="jumpToCard()"></select>
+            <button class="nav-btn btn-random" onclick="randomCard()">🎲 随机抽查</button>
+            <button class="nav-btn" onclick="nextCard()">下一题</button>
+        </div>
+    </div>
+
+    <script>
+        const exercisesData = [
+            // ==================== 题型1 理解性默写 ====================
+            {
+                year: "题型1 理解性默写", paper: "第1题 (25-26高一上·山东青岛·期中)",
+                question: "《短歌行》中用《诗经》典故，借写姑娘思念情人来表达曹操渴望得到贤才的诗句是：“_________，_________。”",
+                answer: "①. 青青子衿    ②. 悠悠我心",
+                analysis: "考查《短歌行》化用《诗经》典故表达求贤若渴之情。易错字：衿（衣字旁，不可写成“矜”）、悠。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第2题 (25-26高一上·山东青岛·期中)",
+                question: "《短歌行》中“_________，_________”两句诗，模仿了《管子·形势解》的“海不辞水，故能成其大；山不辞土石，故能成其高”。",
+                answer: "①. 山不厌高    ②. 海不厌深",
+                analysis: "考查曹操表达宽广胸襟和招纳贤才的决心。易错字：厌（意为满足）。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第3题 (25-26高一上·山东青岛·期中)",
+                question: "《归园田居》（其一）中“_________，_________”两句使用叠词，增添了乡村远景的平静安详之感。",
+                answer: "①. 暧暧远人村    ②. 依依墟里烟",
+                analysis: "描绘恬静优美的田园风光。易错字：暧暧（日字旁，意为昏暗不明）、墟里（村落）。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第4题 (25-26高一上·山东青岛·期中)",
+                question: "《静女》中写女子约会调皮躲藏令男子焦急挠头的场景的诗句是：“_________，_________。”",
+                answer: "①. 爱而不见    ②. 搔首踟蹰",
+                analysis: "生动刻画恋爱中男子的憨态。易错字：爱（通“薆”，隐藏）、踟蹰（chí chú，足字旁）。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第5题 (25-26高一上·山东青岛·期中)",
+                question: "《涉江采芙蓉》中通过设问表达思念的句子是：“_________？_________。”",
+                answer: "①. 采之欲遗谁    ②. 所思在远道",
+                analysis: "考查古诗中典型的抒情设问。易错字：遗（wèi，赠送）。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第6题 (26-27高一上·陕西渭南·期中)",
+                question: "《沁园春·长沙》上阕写景的角度和手法多样，其中运用对偶的修辞手法描写动态之景的句子是“_________，_________”。",
+                answer: "①. 鹰击长空    ②. 鱼翔浅底",
+                analysis: "考查对偶句及动词的精准运用（击、翔）。易错字：翔。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第7题 (26-27高一上·陕西渭南·期中)",
+                question: "《沁园春·长沙》中，“_________，_________”两句化用祖逖“中流击楫”的典故，运用夸张手法写出了劈波斩浪、不畏艰险的革命精神。",
+                answer: "①. 到中流击水    ②. 浪遏飞舟",
+                analysis: "化用典故抒发革命豪情。易错字：遏（阻挡）。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第8题 (25-26高一上·吉林长春·期中)",
+                question: "曹操《短歌行》中“_________，_________”两句用典，借姑娘思念情人，来表达自己对人才的渴望。",
+                answer: "①. 青青子衿    ②. 悠悠我心",
+                analysis: "高频考点，化用《诗经·郑风》原句。易错字：衿、悠。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第9题 (25-26高一上·吉林长春·期中)",
+                question: "对自由生活的向往是很多诗作的共同主题，如陶渊明《归园田居（其一）》两句“_________，_________”用比喻手法体现。",
+                answer: "①. 羁鸟恋旧林    ②. 池鱼思故渊",
+                analysis: "以羁鸟、池鱼自喻，表达对官场的厌恶和对田园的向往。易错字：羁（网字头）、渊。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第10题 (25-26高一上·吉林长春·期中)",
+                question: "杜甫的《登高》诗中，“_________”写出了诗人远离家乡，长久漂泊的境况，“_________”更显得诗人形单影只，老病孤苦。",
+                answer: "①. 万里悲秋常作客    ②. 百年多病独登台",
+                analysis: "十四字包含多重愁苦，对仗工稳。易错字：常作客（勿写成“长作客”）、独登台。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第11题 (25-26高一上·吉林长春·期中)",
+                question: "在《师说》中，士大夫之族以地位、官职为借口拒绝从师学习的语句是“_________，_________”。",
+                answer: "①. 位卑则足羞    ②. 官盛则近谀",
+                analysis: "揭示士大夫阶层耻学于师的心理借口。易错字：卑、羞、谀（言字旁）。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第12题 (25-26高一上·吉林长春·期中)",
+                question: "白居易《琵琶行》中“_________”一句写弹奏前试弹校音的动作。",
+                answer: "①. 转轴拨弦三两声",
+                analysis: "描绘正式演奏前的准备动作。易错字：拨、弦（弓字旁）。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第13题 (25-26高一下·广东广州·期中)",
+                question: "《桂枝香·金陵怀古》中，词人感叹六朝的历史像流水一样流逝掉，未曾给当朝的人留下什么教训和反思的句子是“_________，_________”。",
+                answer: "①. 六朝旧事随流水    ②. 但寒烟衰草凝绿",
+                analysis: "借古讽今，表达对北宋统治者的忧虑。易错字：衰草、凝绿。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第14题 (25-26高一下·广东广州·期中)",
+                question: "《念奴娇·过洞庭》中点出了在这秋草无色、秋水无波、美玉一般的空灵画面上，湖上的一叶扁舟分外突出，真似仙境的是“_________，_________”。",
+                answer: "①. 玉鉴琼田三万顷    ②. 着我扁舟一叶",
+                analysis: "描绘洞庭湖的广阔与澄澈。易错字：鉴、琼、顷、扁舟。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第15题 (25-26高一下·广东广州·期中)",
+                question: "在《子路、曾皙、冉有、公西华侍坐》中，曾皙的志向是暮春时节，换上春天的衣服，和五六个成人、六七个孩子“_________，_________”，然后唱着歌回家。",
+                answer: "①. 浴乎沂    ②. 风乎舞雩",
+                analysis: "描绘儒家理想的太平盛世图景。易错字：沂（yí）、雩（yú，雨字头）。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第16题 (25-26高一上·内蒙古乌兰察布·期中)",
+                question: "杜甫是伟大的爱国诗人，他的诗歌中常常充满了忧国之思，如《登高》“_________，_________”两句，既有对个人命运坎坷的感慨，又有对国事艰难的担忧。",
+                answer: "①. 艰难苦恨繁霜鬓    ②. 潦倒新停浊酒杯",
+                analysis: "国愁家恨交织。易错字：繁、鬓、潦倒、浊酒。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第17题 (25-26高一上·广东揭阳·期中)",
+                question: "李白的《梦游天姥吟留别》中诗人直抒胸臆，表现蔑视权贵、不卑不屈的态度的句子是“_________，_________”。",
+                answer: "①. 安能摧眉折腰事权贵    ②. 使我不得开心颜",
+                analysis: "全诗主旨句，彰显李白傲岸不羁的人格。易错字：摧眉、事。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第18题 (25-26高一上·广东揭阳·期中)",
+                question: "杜甫在《登高》中的“_________，_________”，不仅使人联想到落木窸窣之声、长江汹涌之状，也无形中传达出韶光易逝、壮志难酬的感慨。",
+                answer: "①. 无边落木萧萧下    ②. 不尽长江滚滚来",
+                analysis: "千古名句，境界阔大而悲凉。易错字：萧萧。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第19题 (25-26高一上·广东揭阳·期中)",
+                question: "李清照的《声声慢》中，“_________，_________”这一生活状态的描写和心理活动的刻画表达了词人无边无际的孤独和度日如年的煎熬之感。",
+                answer: "①. 守着窗儿    ②. 独自怎生得黑",
+                analysis: "白描手法，写出难以排遣的愁苦。易错字：怎生（怎么，如何）。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第20题 (25-26高一上·广东河源·期中)",
+                question: "在《念奴娇·赤壁怀古》中词人神游故国后，用“_________，_________”来书写自己不免思绪深沉，顿觉年华逝去、壮怀莫酬的感叹。",
+                answer: "①. 多情应笑我    ②. 早生华发",
+                analysis: "词人自嘲，将古人与自己对比。易错字：华发（花白头发）。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第21题 (25-26高一上·广东河源·期中)",
+                question: "儒道两家都曾用行路来形象地论述积累的重要性。《老子》中说：“千里之行，始于足下。”而荀子《劝学》中则说：“_________，_________。”",
+                answer: "①. 故不积跬步    ②. 无以至千里",
+                analysis: "跨文本对比考查。易错字：跬步（kuǐ，半步）、至。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第22题 (25-26高一上·广东河源·期中)",
+                question: "中国是一个有着尊师传统的国家，韩愈在《师说》中指出教师作用的两句是：“_________，_________。”",
+                answer: "①. 师者    ②. 所以传道受业解惑也",
+                analysis: "开篇立论。易错字：受（通“授”）。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第23题 (25-26高一上·辽宁大连·期中)",
+                question: "白居易《琵琶行并序》中，运用侧面烘托，通过描写周围环境和听众反应来展现音乐巨大感染力的两句是“_________，_________”。",
+                answer: "①. 东船西舫悄无言    ②. 唯见江心秋月白",
+                analysis: "以静衬动，此时无声胜有声。易错字：舫（舟字旁）、唯见。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第24题 (25-26高一上·辽宁大连·期中)",
+                question: "李白《梦游天姥吟留别》中，直抒胸臆，表现了诗人蔑视权贵、追求自由人格精神的名句是“_________，_________”。",
+                answer: "①. 安能摧眉折腰事权贵    ②. 使我不得开心颜",
+                analysis: "主旨句反复考查。易错字：摧眉。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第25题 (25-26高一上·辽宁大连·期中)",
+                question: "古典诗词常运用隐喻来寄托情思。陶渊明在《归园田居（其一）》中，就运用生动的比喻来书写身世之感，如“_________，_________”。",
+                answer: "①. 羁鸟恋旧林    ②. 池鱼思故渊",
+                analysis: "以动物之恋本性，喻己之慕田园。易错字：羁、渊。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第26题 (25-26高一上·安徽合肥·期中)",
+                question: "杜甫《登高》中为我们营造了一幅气势磅礴的长江秋日图的句子是：“_________，_________。”",
+                answer: "①. 无边落木萧萧下    ②. 不尽长江滚滚来",
+                analysis: "写景名句。易错字：萧萧。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第27题 (25-26高一上·安徽合肥·期中)",
+                question: "曹操《短歌行》中“_________，_________”两句化用了《诗经》中写姑娘思念情人的诗句，以此来表达自己对人才的渴望。",
+                answer: "①. 青青子衿    ②. 悠悠我心",
+                analysis: "用典高频题。易错字：衿、悠。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第28题 (25-26高一上·安徽合肥·期中)",
+                question: "《念奴娇·赤壁怀古》中“_________，_________”两句写词人感慨自己壮志难酬，只能转而洒酒祭江，以此自我安慰。",
+                answer: "①. 人生如梦    ②. 一尊还酹江月",
+                analysis: "情感由激昂转入旷达悲凉。易错字：尊（通“樽”）、酹（lèi，酉字旁）。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第29题 (25-26高一上·青海西宁·期中)",
+                question: "《沁园春·长沙》中，“_________”一句概括了壮丽的湘江秋景；“_________”一句表达了革命者对大军阀、大官僚的蔑视。",
+                answer: "①. 万类霜天竞自由    ②. 粪土当年万户侯",
+                analysis: "提炼上阕写景与下阕抒情的关键句。易错字：竞、粪土。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第30题 (25-26高一上·青海西宁·期中)",
+                question: "曹操的《短歌行》中“_________，_________”比喻新颖，生动形象地抒发了诗人对人生短暂的深沉感慨。",
+                answer: "①. 譬如朝露    ②. 去日苦多",
+                analysis: "以朝露喻人生短促。易错字：譬、露。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第31题 (25-26高一上·青海西宁·期中)",
+                question: "乐曲演奏过程中的停顿也有情感表达作用，白居易《琵琶行》中对此进行说明的诗句是“_________，_________”。",
+                answer: "①. 别有幽愁暗恨生    ②. 此时无声胜有声",
+                analysis: "写音乐的休止所产生的艺术魅力。易错字：幽愁。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第32题 (25-26高一上·青海西宁·期中)",
+                question: "《归园田居》中运用对偶和比喻的手法，表达了身在宦海却心系田园的心情的诗句是：“_________，_________。”",
+                answer: "①. 羁鸟恋旧林    ②. 池鱼思故渊",
+                analysis: "经典隐喻句。易错字：羁、旧林、故渊。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第33题 (25-26高一上·青海西宁·期中)",
+                question: "《永遇乐·京口北固亭怀古》作者登高望远，首先想到孙权这位著名的历史人物不禁感叹的两句是：“_________，_________。”",
+                answer: "①. 千古江山    ②. 英雄无觅孙仲谋处",
+                analysis: "开篇借孙权表达对英雄逝去和江山沦落的感叹。易错字：觅、仲谋。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第34题 (25-26高一上·青海西宁·期中)",
+                question: "《登高》集中表现了夔州秋天的典型特征的句子是：“_________，_________。”",
+                answer: "①. 风急天高猿啸哀    ②. 渚清沙白鸟飞回",
+                analysis: "首联十四字写六种景物，秋意浓烈。易错字：啸、渚（水字旁）。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第35题 (25-26高一上·广东肇庆·期中)",
+                question: "《归园田居》中“_________，_________”两句，表现了诗人清高孤傲、质性自然、与世俗不和的性格，这是诗人辞官归隐的根本原因。",
+                answer: "①. 少无适俗韵    ②. 性本爱丘山",
+                analysis: "交代归隐的本性原因。易错字：韵。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第36题 (25-26高一上·广东肇庆·期中)",
+                question: "杜甫的《登高》中“_________，_________”两句，与王维的《使至塞上》中的“大漠孤烟直，长河落日圆”两句一样，景象旷远，境界雄阔，给人视通万里、山河尽览的感受。",
+                answer: "①. 无边落木萧萧下    ②. 不尽长江滚滚来",
+                analysis: "与王维名句比较，突显宏大气势。易错字：落木。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第37题 (25-26高一上·广东肇庆·期中)",
+                question: "《梦游天姥吟留别》中，“_________”描写谢灵运在剡溪的住处环境清幽；“_________”描写动物的叫声震耳欲聋。",
+                answer: "①. 渌水荡漾清猿啼    ②. 熊咆龙吟殷岩泉",
+                analysis: "梦中之景，一清幽一震撼。易错字：渌水（三点水）、殷（yǐn，震动）。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第38题 (25-26高一上·广东肇庆·期中)",
+                question: "《琵琶行》中描写琵琶女在演奏过程中，音乐时而婉转流畅，时而滞涩不畅的两句是：“_________，_________。”",
+                answer: "①. 间关莺语花底滑    ②. 幽咽泉流冰下难",
+                analysis: "以声写声的比喻。易错字：间关、幽咽（yè）。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第39题 (25-26高一上·广东肇庆·期中)",
+                question: "《诗经·静女》中，男女约会时，面对女子“_________”的调皮躲藏，男子“_________”的焦急神态跃然纸上，生动展现出他盼望见到女子的急切心情。",
+                answer: "①. 爱而不见    ②. 搔首踟蹰",
+                analysis: "重温情景描写。易错字：爱、踟蹰。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第40题 (25-26高一上·湖南衡阳·期中)",
+                question: "曹操在《短歌行》中运用典故，以周公自比，说自己也有周公那样的胸襟，一定会热切殷勤地接待贤才，使天下的人才都心悦诚服地归顺的诗句是：“_________，_________。”",
+                answer: "①. 周公吐哺    ②. 天下归心",
+                analysis: "“周公吐哺，天下归心”为全诗卒章显志之笔。易错字：哺（口字旁）。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第41题 (25-26高一上·湖南衡阳·期中)",
+                question: "杜甫的《登高》中，“_________，_________”两句通过空间的广度和时间的长度写出了作者晚年离乡万里、疾病缠身的凄苦生活。",
+                answer: "①. 万里悲秋常作客    ②. 百年多病独登台",
+                analysis: "时空交织的深沉愁苦。易错字：客、登台。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第42题 (24-25高一上·吉林延边·期中)",
+                question: "《永遇乐·京口北固亭怀古》中借用廉颇的典故，表明自己虽然年老却还是壮志犹存，希望能够为国立功的句子是：“_________，_________？”",
+                answer: "①. 廉颇老矣    ②. 尚能饭否",
+                analysis: "结句用典，借廉颇自况。易错字：廉颇、矣。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第43题 (24-25高一上·吉林延边·期中)",
+                question: "苏轼《念奴娇·赤壁怀古》中“_________”一句，写的是周瑜的儒将装束。“_________”一句，表明了周瑜的赫赫战功。",
+                answer: "①. 羽扇纶巾    ②. 樯橹灰飞烟灭",
+                analysis: "刻画周瑜的潇洒从容。易错字：纶（guān）巾、樯橹（qiáng lǔ）。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第44题 (24-25高一上·吉林延边·期中)",
+                question: "杜甫在《登高》中的“_________，_________”，不仅使人联想到落木窸窣之声、长江汹涌之状，也无形中传达出韶光易逝、壮志难酬的感慨。",
+                answer: "①. 无边落木萧萧下    ②. 不尽长江滚滚来",
+                analysis: "重复考查重点名句。易错字：萧萧。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第45题 (24-25高一上·吉林延边·期中)",
+                question: "白居易《琵琶行》中，由琵琶声想到珠玉声，写出了乐声的浊重与清脆的两句是“_________，_________”。",
+                answer: "①. 嘈嘈切切错杂弹    ②. 大珠小珠落玉盘",
+                analysis: "视觉与听觉的通感比喻。易错字：嘈嘈（口字旁）。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第46题 (24-25高一上·吉林延边·期中)",
+                question: "李白十分崇拜谢灵运，常常称其为“谢公”，如《梦游天姥吟留别》中的“_________，_________”。",
+                answer: "①. 谢公宿处今尚在    ②. 渌水荡漾清猿啼<br><span style='font-size:0.62em;color:#555;'>（注：或填“脚著谢公屐，身登青云梯”）</span>",
+                analysis: "考查文中带“谢公”的诗句。易错字：渌（水字旁）、著、屐（jī）。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第47题 (25-26高一上·吉林长春·期中)",
+                question: "《劝学》中荀子认为人的知识品德才能非天生，而是“_________，_________”，就像木材经加工变直，金属经磨砺变利。",
+                answer: "①. 君子博学而日参省乎己    ②. 则知明而行无过矣",
+                analysis: "点明学习的意义在于提升自我。易错字：参省、知（通“智”）。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第48题 (25-26高一上·吉林长春·期中)",
+                question: "《短歌行》中出自《诗经·郑风·子矜》，借写姑娘思念情人来表达渴慕贤才之意的句子是：“_________，_________。”",
+                answer: "①. 青青子衿    ②. 悠悠我心",
+                analysis: "重复考点。易错字：衿。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第49题 (25-26高一上·吉林长春·期中)",
+                question: "杜甫《登高》一诗中，写远望所见，用传神之笔描写落叶和长江气势的诗句是“_________，_________”。",
+                answer: "①. 无边落木萧萧下    ②. 不尽长江滚滚来",
+                analysis: "重复考点。易错字：落木。", image: null
+            },
+            {
+                year: "题型1 理解性默写", paper: "第50题 (25-26高一上·吉林长春·期中)",
+                question: "苏轼《念奴娇·赤壁怀古》中，描写赤壁战场上周瑜从容儒雅，沉着应战，指挥若定的儒将风度形象的句子是“_________，_________，_________”。",
+                answer: "①. 羽扇纶巾    ②. 谈笑间    ③. 樯橹灰飞烟灭",
+                analysis: "完整呈现周瑜形象。易错字：纶、樯橹。", image: null
+            },
+            // ==================== 题型2 意象类默写 ====================
+            {
+                year: "题型2 意象类默写", paper: "第1题 (26-27高一上·陕西渭南·期中)",
+                question: "“秋风”是古诗词中的常见意象。古诗词中含有“秋风”的句子有“_________，_________”。",
+                answer: "①. 楼船夜雪瓜洲渡    ②. 铁马秋风大散关<br><span style='font-size:0.62em;color:#555;'>（注：或填“秋风吹不尽，总是玉关情”等皆可）</span>",
+                analysis: "开放性考题，提取关键词“秋风”。易错字：渡、散。", image: null
+            },
+            {
+                year: "题型2 意象类默写", paper: "第2题 (25-26高一上·内蒙古乌兰察布·期中)",
+                question: "我国的植物种类繁多，古人诗句中处处可见具体的植物名称，如“_________，_________”。",
+                answer: "①. 榆柳荫后檐    ②. 桃李罗堂前<br><span style='font-size:0.62em;color:#555;'>（注：或填“采菊东篱下，悠然见南山”等皆可）</span>",
+                analysis: "开放题型，围绕植物意象。易错字：荫、罗。", image: null
+            },
+            {
+                year: "题型2 意象类默写", paper: "第3题 (25-26高一上·广东河源·期中)",
+                question: "《琵琶行》中，作者善于借“月”衬托人物情感，以“_________”衬托琵琶女独守空船的孤寂，又用“_________”一句衬托作者被贬江州的孤寂与感伤。",
+                answer: "①. 绕船月明江水寒    ②. 春江花朝秋月夜",
+                analysis: "特定篇目中的“月”意象。易错字：绕船。", image: null
+            },
+            {
+                year: "题型2 意象类默写", paper: "第4题 (25-26高一上·湖南衡阳·期中)",
+                question: "《琵琶行》中写琵琶女年长色衰之后，嫁作商人妇，以“_________，_________”两句借月烘托琵琶女独守空船的凄清心情。",
+                answer: "①. 去来江口守空船    ②. 绕船月明江水寒",
+                analysis: "借景抒情句。易错字：去来（偏义复词，偏在“去”）。", image: null
+            },
+            {
+                year: "题型2 意象类默写", paper: "第5题 (25-26高一上·福建厦门·期中)",
+                question: "酒文化与中国古典诗词的创作有密切关系：白居易《琵琶行》中，“_________”写诗人被贬后独自饮酒，借酒浇愁；苏轼《念奴娇·赤壁怀古》中“_________”写词人把酒洒在地上祭奠江月，表达自己的情感。",
+                answer: "①. 往往取酒还独倾    ②. 一尊还酹江月",
+                analysis: "跨文本考查“酒”意象。易错字：倾、尊、酹。", image: null
+            },
+            {
+                year: "题型2 意象类默写", paper: "第6题 (25-26高一上·甘肃兰州·期中)",
+                question: "酒文化与中国古典诗词的创作有密切关系：杜甫《登高》中，“_________”写诗人因病戒酒；白居易《琵琶行》中，“_________”写诗人被贬后独自饮酒，借酒浇愁；苏轼《念奴娇·赤壁怀古》中，“_________”写词人把酒洒在地上祭奠江月，表达自己的情感；李清照《声声慢》里“_________”抵不过晚来风急的寒凉，表达愁绪之深。",
+                answer: "①. 潦倒新停浊酒杯    ②. 往往取酒还独倾    ③. 一尊还酹江月    ④. 三杯两盏淡酒",
+                analysis: "综合性酒文化意象考查。易错字：潦倒、酹、盏。", image: null
+            },
+            {
+                year: "题型2 意象类默写", paper: "第7题 (25-26高一上·浙江金华·期中)",
+                question: "“流水”作为一个形象，经常出现在古诗文中，如“_________，_________”。",
+                answer: "①. 六朝旧事随流水    ②. 但寒烟衰草凝绿<br><span style='font-size:0.62em;color:#555;'>（注：或填“世间行乐亦如此，古来万事东流水”等皆可）</span>",
+                analysis: "流水意象多表时光易逝、愁绪连绵。易错字：衰、凝。", image: null
+            },
+            {
+                year: "题型2 意象类默写", paper: "第8题 (25-26高一上·福建泉州·期中)",
+                question: "数字入诗隐含着古人的时空观和生命体验，比如杜甫的“_________，_________”两句，上下数字对举，成为开拓时间和空间的有效工具。",
+                answer: "①. 万里悲秋常作客    ②. 百年多病独登台",
+                analysis: "“万里”言空间跨度，“百年”言时间长度。易错字：作客。", image: null
+            },
+            {
+                year: "题型2 意象类默写", paper: "第9题 (25-26高一上·湖南张家界·期中)",
+                question: "明月这一意象在古诗词中多被赋予思乡、怀友等意义，而曹操在《短歌行》中又赋予明月新的意义，“_________，_________”两句借明月表达了对人才的渴慕。",
+                answer: "①. 明明如月    ②. 何时可掇",
+                analysis: "以月之不可及喻贤才之难求。易错字：掇（duō，拾取）。", image: null
+            },
+            {
+                year: "题型2 意象类默写", paper: "第10题 (25-26高一上·内蒙古赤峰·期中)",
+                question: "青色是解读中华传统文化的色彩密码之一，李白在《梦游天姥吟留别》中用“_________”描写将要下雨时的阴郁，又用“_________”表现天空的广袤无垠。",
+                answer: "①. 云青青兮欲雨    ②. 青冥浩荡不见底",
+                analysis: "色彩词在诗意境构建中的作用。易错字：青冥（代指天空）。", image: null
+            },
+            {
+                year: "题型2 意象类默写", paper: "第11题 (25-26高一上·吉林·期中)",
+                question: "大学生村官李华为推动乡村经济发展，组织村民种植桑树，为了吸引更多游客前来旅游观光，他决定在宣传标语中加入与“桑”有关的古诗词，例如“_________，_________”来增添传统文化气息。",
+                answer: "①. 狗吠深巷中    ②. 鸡鸣桑树颠<br><span style='font-size:0.62em;color:#555;'>（注：或填“开轩面场圃，把酒话桑麻”等皆可）</span>",
+                analysis: "学以致用，生活场景提取诗词。易错字：吠、颠。", image: null
+            },
+            // ==================== 题型3 情景补充类 ====================
+            {
+                year: "题型3 情景补充类", paper: "第1题 (25-26高一上·内蒙古乌兰察布·期中)",
+                question: "作文课上，老师使用曹操《短歌行》中“_________，_________”两句话，引导学生使用比喻表达光阴易逝、人生短暂的情感。",
+                answer: "①. 譬如朝露    ②. 去日苦多",
+                analysis: "比喻修辞的实际应用。易错字：譬、露。", image: null
+            },
+            {
+                year: "题型3 情景补充类", paper: "第2题 (25-26高一上·浙江温州·期中)",
+                question: "国庆期间，你泛舟夜游赏月，邻船忽然传来琵琶声，当音符随风消散，江湾陷入寂静，你不禁想起《琵琶行》的诗句“_________，_________”。",
+                answer: "①. 东船西舫悄无言    ②. 唯见江心秋月白",
+                analysis: "情景交融的联想。易错字：舫、唯见。", image: null
+            },
+            {
+                year: "题型3 情景补充类", paper: "第3题 (25-26高一上·福建泉州·期中)",
+                question: "进入秋季，天气一时暖一时凉，很容易生病，正如李清照在《声声慢》中所说“_________，_________”，我们一定要注意及时增减衣服，保护好身体。",
+                answer: "①. 乍暖还寒时候    ②. 最难将息",
+                analysis: "生活哲理与词句对应。易错字：乍（zhà）、将息（调养休息）。", image: null
+            },
+            {
+                year: "题型3 情景补充类", paper: "第4题 (25-26高一上·浙江金华·期中)",
+                question: "乡村民宿“爱陶居”开业了，房屋周围按照陶渊明《归园田居》（其一）中“_________，_________”的句意，栽种了多种树木，受到游客喜爱。",
+                answer: "①. 榆柳荫后檐    ②. 桃李罗堂前",
+                analysis: "古诗句在民宿设计中的应用。易错字：荫、檐（木字旁）。", image: null
+            },
+            {
+                year: "题型3 情景补充类", paper: "第5题 (25-26高一上·安徽马鞍山·期中)",
+                question: "人工智能蓬勃发展，有人利用ChatGPT等工具解答困惑，高效学习，这种现象恰好符合《荀子·劝学》中所总结的观点“_________，_________”。",
+                answer: "①. 君子生非异也    ②. 善假于物也",
+                analysis: "借用现代科技诠释“善假于物”。易错字：生（通“性”）、假（凭借、借助）。", image: null
+            },
+            {
+                year: "题型3 情景补充类", paper: "第6题 (25-26高一上·湖南张家界·期中)",
+                question: "王老师到天姥山游玩，从车上远远望去，只见天姥山山势高峻，仿佛遮住了天空，他不禁信口吟出了李白《梦游天姥吟留别》中的“_________，_________”两句。",
+                answer: "①. 天姥连天向天横    ②. 势拔五岳掩赤城",
+                analysis: "夸张手法描写山势的高峻。易错字：姥（mǔ）、拔（超出）。", image: null
+            },
+            {
+                year: "题型3 情景补充类", paper: "第7题 (25-26高一上·贵州黔东南·期中)",
+                question: "王同学国庆旅游，看见远处村落迷蒙隐约、炊烟轻柔飘升的场景，不禁咏叹起陶渊明《归园田居（其一）》中“_________，_________”两句。",
+                answer: "①. 暧暧远人村    ②. 依依墟里烟",
+                analysis: "远景描写的再现。易错字：暧暧、墟里。", image: null
+            },
+            {
+                year: "题型3 情景补充类", paper: "第8题 (25-26高一上·贵州黔东南·期中)",
+                question: "张老师揽镜自照，发现两鬓过早长出白头发，想起苏轼《念奴娇·赤壁怀古》“_________，_________”两句，感叹自己多愁善感。",
+                answer: "①. 多情应笑我    ②. 早生华发",
+                analysis: "词人自嘲情节。易错字：华（花白）。", image: null
+            },
+            {
+                year: "题型3 情景补充类", paper: "第9题 (25-26高一上·山西太原·期中)",
+                question: "小华在音乐会上听到乐队演奏声音高亢嘹亮却戛然而止时，突然想起《琵琶行》中描写琵琶女演奏终了的两句诗：“_________，_________。”",
+                answer: "①. 曲终收拨当心画    ②. 四弦一声如裂帛",
+                analysis: "演奏结尾的高潮力量。易错字：拨、画、裂帛（丝织品）。", image: null
+            },
+            {
+                year: "题型3 情景补充类", paper: "第10题 (25-26高一上·河南郑州·期中)",
+                question: "小明周末到乡村游玩，他看到奶奶家房前屋后各种欣欣向荣的树木，马上吟出了《归园田居》（其一）中的“_________，_________”两句。",
+                answer: "①. 榆柳荫后檐    ②. 桃李罗堂前",
+                analysis: "田园生活场景。易错字：荫、罗。", image: null
+            },
+            {
+                year: "题型3 情景补充类", paper: "第11题 (25-26高一上·河南郑州·期中)",
+                question: "秋高气爽，李华一家假期登山，行走在曲折的山路上，李华被山花吸引了，倚靠着石头，不知不觉天色已晚。此番情形让他想起李白《梦游天姥吟留别》中的两句诗：“_________，_________。”",
+                answer: "①. 千岩万转路不定    ②. 迷花倚石忽已暝",
+                analysis: "迷离幽深的梦游情境。易错字：暝（日字旁，天黑）。", image: null
+            },
+            {
+                year: "题型3 情景补充类", paper: "第12题 (25-26高一上·甘肃·阶段检测)",
+                question: "面对需要违背本心去迎合领导的无理要求时，小李坚定地选择了拒绝。他以《梦游天姥吟留别》中的“_________，_________”表明自己不愿卑躬屈膝侍奉权贵、牺牲内心的自由与快乐。",
+                answer: "①. 安能摧眉折腰事权贵    ②. 使我不得开心颜",
+                analysis: "主旨句在现代语境中的应用。易错字：摧眉。", image: null
+            }
+        ];
+
+        let currentIndex = 0;
+        let isCardFlipped = false;
+        let appStarted = false;
+        let navTimer = null;
+
+        const coverPage = document.getElementById('cover-page');
+        const mainApp = document.getElementById('main-app');
+        const flipCard = document.getElementById('flipCard');
+        const paperTagFront = document.getElementById('paperTagFront');
+        const paperTagBack = document.getElementById('paperTagBack');
+        const questionLayout = document.getElementById('questionLayout');
+        const correctAnswerBox = document.getElementById('correctAnswerBox');
+        const analysisTextBox = document.getElementById('analysisTextBox');
+        const questionSelect = document.getElementById('questionSelect');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+
+        function initApp() {
+            const groups = new Map();
+            exercisesData.forEach((item, index) => {
+                let group = groups.get(item.year);
+                if (!group) {
+                    group = document.createElement('optgroup');
+                    group.label = item.year;
+                    questionSelect.appendChild(group);
+                    groups.set(item.year, group);
+                }
+                const opt = document.createElement('option');
+                opt.value = index;
+                const num = (index + 1).toString().padStart(3, '0');
+                opt.innerText = `第${num}题 · ${item.paper.replace(/^第\s*\d+\s*题\s*/, '')}`;
+                group.appendChild(opt);
+            });
+            setupCard(0);
+        }
+
+        function startApp() {
+            if (appStarted) return;
+            appStarted = true;
+            coverPage.style.opacity = '0';
+            coverPage.style.visibility = 'hidden';
+            setTimeout(() => {
+                mainApp.style.opacity = '1';
+                mainApp.style.visibility = 'visible';
+            }, 500);
+        }
+
+        function formatQuestionText(text) {
+            return text.replace(/[_＿]{2,}/g, '<span class="blank-line">&nbsp;</span>');
+        }
+
+        function renderCard(index) {
+            currentIndex = index;
+            questionSelect.value = index;
+
+            const data = exercisesData[index];
+            const tag = `📜 ${data.year} · ${data.paper}`;
+            paperTagFront.innerText = tag;
+            paperTagBack.innerText = tag;
+
+            questionLayout.innerHTML = '';
+            if (data.image) {
+                const imgBox = document.createElement('div');
+                imgBox.className = 'question-img-box';
+                const img = document.createElement('img');
+                img.src = data.image;
+                img.alt = '试题配图';
+                imgBox.appendChild(img);
+                questionLayout.appendChild(imgBox);
+            }
+
+            const qText = document.createElement('div');
+            qText.className = 'question-text';
+            qText.innerHTML = formatQuestionText(data.question);
+            questionLayout.appendChild(qText);
+
+            correctAnswerBox.innerHTML = data.answer.replace(/\n/g, '<br>');
+            analysisTextBox.innerHTML = data.analysis.replace(/\n/g, '<br>');
+
+            document.querySelector('.question-body').scrollTop = 0;
+            document.querySelector('.back-content').scrollTop = 0;
+        }
+
+        function resetFlip() {
+            flipCard.classList.remove('flipped');
+            isCardFlipped = false;
+        }
+
+        function setupCard(index) {
+            renderCard(index);
+            resetFlip();
+        }
+
+        function flipTheCard() {
+            if (!appStarted) return;
+            if (isCardFlipped) {
+                nextCard();
+            } else {
+                clearTimeout(navTimer);
+                flipCard.classList.remove('is-navigating');
+                flipCard.classList.add('flipped');
+                isCardFlipped = true;
+            }
+        }
+
+        function switchCard(newIndex) {
+            if (newIndex === currentIndex) {
+                if (isCardFlipped) resetFlip();
+                return;
+            }
+            const wasFlipped = isCardFlipped;
+            renderCard(newIndex);
+            if (wasFlipped) {
+                clearTimeout(navTimer);
+                flipCard.classList.add('is-navigating');
+                resetFlip();
+                navTimer = setTimeout(() => flipCard.classList.remove('is-navigating'), 800);
+            }
+        }
+
+        function prevCard() {
+            let idx = currentIndex - 1;
+            if (idx < 0) idx = exercisesData.length - 1;
+            switchCard(idx);
+        }
+
+        function nextCard() {
+            let idx = currentIndex + 1;
+            if (idx >= exercisesData.length) idx = 0;
+            switchCard(idx);
+        }
+
+        function randomCard() {
+            let idx = currentIndex;
+            while (idx === currentIndex && exercisesData.length > 1) {
+                idx = Math.floor(Math.random() * exercisesData.length);
+            }
+            switchCard(idx);
+        }
+
+        function jumpToCard() {
+            switchCard(parseInt(questionSelect.value, 10));
+            questionSelect.blur();
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.error(err);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        document.addEventListener('fullscreenchange', () => {
+            fullscreenBtn.innerText = document.fullscreenElement ? '🗗 退出全屏' : '⛶ 全屏显示';
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (!appStarted || e.repeat) return;
+            if (document.activeElement === questionSelect) return;
+            if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+                e.preventDefault();
+                nextCard();
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                e.preventDefault();
+                prevCard();
+            } else if (e.key === ' ') {
+                e.preventDefault();
+                flipTheCard();
+            }
+        });
+
+        initApp();
+    </script>
+</body>
+</html>
