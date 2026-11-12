@@ -322,6 +322,43 @@
         /* 翻回正面过程中隐藏答案面，避免下一题答案提前露出 */
         .card.is-navigating .card-back { visibility: hidden; }
 
+        /* 翻页与随机抽查动效 */
+        .scene.anim-next { animation: sceneInRight 0.42s cubic-bezier(0.22, 0.9, 0.3, 1); }
+        .scene.anim-prev { animation: sceneInLeft 0.42s cubic-bezier(0.22, 0.9, 0.3, 1); }
+        .scene.anim-random { animation: scenePop 0.55s cubic-bezier(0.22, 0.9, 0.3, 1); }
+
+        @keyframes sceneInRight {
+            from { opacity: 0; transform: translateX(5%) scale(0.975); }
+            to   { opacity: 1; transform: none; }
+        }
+        @keyframes sceneInLeft {
+            from { opacity: 0; transform: translateX(-5%) scale(0.975); }
+            to   { opacity: 1; transform: none; }
+        }
+        @keyframes scenePop {
+            0%   { opacity: 0; transform: scale(0.9) rotate(-1.2deg); }
+            55%  { opacity: 1; transform: scale(1.025) rotate(0.5deg); }
+            100% { opacity: 1; transform: none; }
+        }
+
+        /* 随机抽查时卡片的抖动 + 标签呼吸 */
+        .card.is-roulette { animation: rouletteShake 0.14s linear infinite alternate; }
+        @keyframes rouletteShake {
+            from { transform: translateX(-7px) rotate(-0.22deg); }
+            to   { transform: translateX(7px) rotate(0.22deg); }
+        }
+        .card.is-roulette .question-body { opacity: 0.4; transition: opacity 0.2s ease; }
+        .card.is-roulette .paper-tag { animation: tagGlow 0.3s ease-in-out infinite alternate; }
+        @keyframes tagGlow {
+            from { box-shadow: 0 0 0 0 rgba(139, 38, 30, 0.3); }
+            to   { box-shadow: 0 0 14px 2px rgba(139, 38, 30, 0.35); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .scene, .card, .card-face, .paper-tag { animation: none !important; }
+            .card { transition-duration: 0.01ms; }
+        }
+
         @media (max-width: 900px), (max-height: 540px) {
             .shortcuts-tip { display: none; }
             .copyright { font-size: 11px; }
@@ -828,10 +865,13 @@
         let isCardFlipped = false;
         let appStarted = false;
         let navTimer = null;
+        let rouletteTimer = null;
+        let isRoulette = false;
 
         const coverPage = document.getElementById('cover-page');
         const mainApp = document.getElementById('main-app');
         const flipCard = document.getElementById('flipCard');
+        const scene = document.querySelector('.scene');
         const paperTagFront = document.getElementById('paperTagFront');
         const paperTagBack = document.getElementById('paperTagBack');
         const questionLayout = document.getElementById('questionLayout');
@@ -916,8 +956,18 @@
             resetFlip();
         }
 
+        function playSceneAnim(dir) {
+            scene.classList.remove('anim-next', 'anim-prev', 'anim-random');
+            void scene.offsetWidth;
+            scene.classList.add('anim-' + dir);
+        }
+
+        scene.addEventListener('animationend', (e) => {
+            if (e.target === scene) scene.classList.remove('anim-next', 'anim-prev', 'anim-random');
+        });
+
         function flipTheCard() {
-            if (!appStarted) return;
+            if (!appStarted || isRoulette) return;
             if (isCardFlipped) {
                 nextCard();
             } else {
@@ -928,13 +978,15 @@
             }
         }
 
-        function switchCard(newIndex) {
+        function switchCard(newIndex, dir) {
             if (newIndex === currentIndex) {
                 if (isCardFlipped) resetFlip();
                 return;
             }
+            const prevIndex = currentIndex;
             const wasFlipped = isCardFlipped;
             renderCard(newIndex);
+            playSceneAnim(dir || (newIndex > prevIndex ? 'next' : 'prev'));
             if (wasFlipped) {
                 clearTimeout(navTimer);
                 flipCard.classList.add('is-navigating');
@@ -943,27 +995,68 @@
             }
         }
 
+        function stopRoulette() {
+            if (rouletteTimer) {
+                clearInterval(rouletteTimer);
+                rouletteTimer = null;
+            }
+            if (isRoulette) {
+                isRoulette = false;
+                flipCard.classList.remove('is-roulette');
+            }
+        }
+
         function prevCard() {
+            stopRoulette();
             let idx = currentIndex - 1;
             if (idx < 0) idx = exercisesData.length - 1;
-            switchCard(idx);
+            switchCard(idx, 'prev');
         }
 
         function nextCard() {
+            stopRoulette();
             let idx = currentIndex + 1;
             if (idx >= exercisesData.length) idx = 0;
-            switchCard(idx);
+            switchCard(idx, 'next');
         }
 
         function randomCard() {
+            const count = exercisesData.length;
+            if (isRoulette || count < 2) return;
+
             let idx = currentIndex;
-            while (idx === currentIndex && exercisesData.length > 1) {
-                idx = Math.floor(Math.random() * exercisesData.length);
+            while (idx === currentIndex) {
+                idx = Math.floor(Math.random() * count);
             }
-            switchCard(idx);
+
+            // 先快速滚动题号再落定，形成"抽签"效果
+            isRoulette = true;
+            flipCard.classList.add('is-roulette');
+            if (isCardFlipped) {
+                clearTimeout(navTimer);
+                flipCard.classList.add('is-navigating');
+                resetFlip();
+                navTimer = setTimeout(() => flipCard.classList.remove('is-navigating'), 800);
+            }
+
+            let ticks = 0;
+            const totalTicks = 9;
+            rouletteTimer = setInterval(() => {
+                ticks++;
+                if (ticks >= totalTicks) {
+                    stopRoulette();
+                    switchCard(idx, 'random');
+                    return;
+                }
+                const num = (Math.floor(Math.random() * count) + 1).toString().padStart(3, '0');
+                const tag = `🎲 随机抽查中 · 第 ${num} 题`;
+                paperTagFront.innerText = tag;
+                paperTagBack.innerText = tag;
+            }, 60);
         }
 
         function jumpToCard() {
+            stopRoulette();
             switchCard(parseInt(questionSelect.value, 10));
             questionSelect.blur();
         }
